@@ -23,7 +23,7 @@ void maintainWifi() {
   if (lastWifiAttempt != 0 && now - lastWifiAttempt < Config::WIFI_RETRY_MS) return;
   lastWifiAttempt = now ? now : 1;
 
-  Serial.printf("[WIFI] Conectando a %s ...\n", WIFI_SSID);
+  Serial.printf("[WIFI] Conectando a %s ...\r\n", WIFI_SSID);
   WiFi.disconnect();
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD, Config::WIFI_CHANNEL);
 }
@@ -35,7 +35,7 @@ void maintainMqtt() {
   if (lastMqttAttempt != 0 && now - lastMqttAttempt < Config::MQTT_RETRY_MS) return;
   lastMqttAttempt = now ? now : 1;
 
-  Serial.printf("[MQTT] Conectando a %s:%d (clientId=%s) ...\n", MQTT_HOST,
+  Serial.printf("[MQTT] Conectando a %s:%d (clientId=%s) ...\r\n", MQTT_HOST,
                 MQTT_PORT, clientId);
 
   // Last Will: el broker publica "offline" (retenido) si la conexion se pierde
@@ -51,7 +51,7 @@ void maintainMqtt() {
     mqtt.publish(Config::TOPIC_STATUS,
                  "{\"device_id\":\"ESP32-001\",\"state\":\"online\"}", true);
   } else {
-    Serial.printf("[MQTT] Fallo, rc=%d (reintento en %lu s)\n", mqtt.state(),
+    Serial.printf("[MQTT] Fallo, rc=%d (reintento en %lu s)\r\n", mqtt.state(),
                   Config::MQTT_RETRY_MS / 1000);
   }
 }
@@ -74,7 +74,7 @@ void maintainNetwork() {
 
   bool wifiUp = WiFi.status() == WL_CONNECTED;
   if (wifiUp && !wifiReported) {
-    Serial.printf("[WIFI] Conectado, IP=%s\n", WiFi.localIP().toString().c_str());
+    Serial.printf("[WIFI] Conectado, IP=%s\r\n", WiFi.localIP().toString().c_str());
   } else if (!wifiUp && wifiReported) {
     Serial.println("[WIFI] Conexion perdida");
   }
