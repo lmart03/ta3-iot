@@ -42,23 +42,28 @@ const series = (title, x, y, w, field, unit, o = {}) => ({
   options: { legend: { displayMode: "table", placement: "bottom", calcs: ["min", "mean", "max", "lastNotNull"] },
     tooltip: { mode: "multi", sort: "none" } },
 });
+
+// Tarjetas en vivo (WebSocket): el valor se actualiza en cuanto llega el mensaje MQTT.
+const liveStat = (title, x, field, o = {}) => ({
+  id: ++id, type: "stat", title: `${title} (EN VIVO)`, datasource: MQTT_DS, gridPos: { x, y: 0, w: 4, h: 4 },
+  targets: liveTarget,
+  fieldConfig: { defaults: { unit: o.unit, decimals: o.decimals, mappings: o.mappings ?? [],
+    thresholds: { mode: "absolute", steps: o.steps ?? [{ color: BLUE, value: null }] }, noValue: "Sin datos" }, overrides: [] },
+  options: { colorMode: "background", graphMode: o.graph ?? "none", textMode: "value",
+    reduceOptions: { calcs: ["lastNotNull"], fields: `/^${field}$/`, values: false } },
+});
 const motionInt = `\n  |> map(fn: (r) => ({r with _value: if r._value then 1 else 0}))`;
 
 const panels = [
-  stat("Temperatura actual", 0, 0, 4, base("temperature") + "\n  |> last()",
-    { unit: "celsius", decimals: 1, steps: tempSteps }),
-  stat("Humedad actual", 4, 0, 4, base("humidity") + "\n  |> last()",
-    { unit: "humidity", decimals: 1, steps: [{ color: BLUE, value: null }] }),
-  stat("Iluminación (ADC 0-4095)", 8, 0, 4, base("light_raw") + "\n  |> last()",
-    { unit: "none", decimals: 0, steps: [{ color: "#8e44ad", value: null }] }),
-  stat("Movimiento", 12, 0, 4, base("motion") + motionInt + "\n  |> last()",
-    { colorMode: "background", graph: "none",
-      mappings: [{ type: "value", options: { "0": { text: "SIN MOVIMIENTO", color: GREEN }, "1": { text: "DETECTADO", color: YELLOW } } }],
-      steps: [{ color: GREEN, value: null }] }),
-  stat("Estado general", 16, 0, 4, base("status_code") + "\n  |> last()",
-    { graph: "none",
-      mappings: [{ type: "value", options: { "0": { text: "NORMAL", color: GREEN }, "1": { text: "WARNING", color: YELLOW }, "2": { text: "CRITICAL", color: RED } } }],
-      steps: [{ color: GREEN, value: null }] }),
+  liveStat("Temperatura", 0, "temperature", { unit: "celsius", decimals: 1, steps: tempSteps, graph: "area" }),
+  liveStat("Humedad", 4, "humidity", { unit: "humidity", decimals: 1, graph: "area" }),
+  liveStat("Iluminación (ADC)", 8, "light_raw", { unit: "none", decimals: 0, steps: [{ color: "#8e44ad", value: null }], graph: "area" }),
+  liveStat("Movimiento", 12, "motion", {
+    mappings: [{ type: "value", options: { "false": { text: "SIN MOVIMIENTO", color: GREEN }, "true": { text: "DETECTADO", color: YELLOW } } }],
+    steps: [{ color: GREEN, value: null }] }),
+  liveStat("Estado", 16, "status", {
+    mappings: [{ type: "value", options: { NORMAL: { text: "NORMAL", color: GREEN }, WARNING: { text: "WARNING", color: YELLOW }, CRITICAL: { text: "CRITICAL", color: RED } } }],
+    steps: [{ color: GREEN, value: null }] }),
   stat("Mediciones recibidas", 20, 0, 4, base("sequence") + "\n  |> count()",
     { unit: "none", graph: "none", steps: [{ color: BLUE, value: null }] }),
 
@@ -94,7 +99,7 @@ const panels = [
 
 // Fila en vivo: Grafana Live (WebSocket) <- plugin MQTT <- EMQX. Sin InfluxDB ni polling.
 const livePanel = (title, x, w, field, unit, color) => ({
-  id: ++id, type: "timeseries", title: `${title} (EN VIVO)`, datasource: MQTT_DS, gridPos: { x, y: 0, w, h: 7 },
+  id: ++id, type: "timeseries", title: `${title} (EN VIVO)`, datasource: MQTT_DS, gridPos: { x, y: 4, w, h: 7 },
   targets: liveTarget,
   transformations: [{ id: "organize", options: { includeByName: { Time: true, [field]: true } } }],
   fieldConfig: { defaults: { unit, custom: { lineWidth: 2, fillOpacity: 15, showPoints: "never" },
@@ -106,8 +111,8 @@ const livePanels = [
   livePanel("Humedad", 8, 8, "humidity", "humidity", BLUE),
   livePanel("Iluminación", 16, 8, "light_raw", "none", "#8e44ad"),
 ];
-for (const p of panels) p.gridPos.y += 7;
-panels.unshift(...livePanels);
+for (const p of panels) if (p.datasource !== MQTT_DS && p.gridPos.y > 0) p.gridPos.y += 7;
+panels.push(...livePanels);
 
 // Nombre del grupo (aparece en el titulo del dashboard). CAMBIAR por el nombre real del equipo.
 const GROUP_NAME = process.env.GROUP_NAME || "GRUPO 1";
