@@ -6,7 +6,9 @@ const DS = { type: "influxdb", uid: "influx-flux" };
 const base = (field, range = "v.timeRangeStart, stop: v.timeRangeStop") =>
   `from(bucket: "smart_environment")
   |> range(start: ${range})
-  |> filter(fn: (r) => r._measurement == "environment" and r.device_id == "\${device}" and r._field == "${field}")`;
+  |> filter(fn: (r) => r._measurement == "environment" and r.device_id == "\${device}" and r._field == "${field}")
+  |> group(columns: ["_field"])
+  |> sort(columns: ["_time"])`;
 
 const MQTT_DS = { type: "grafana-mqtt-datasource", uid: "mqtt-live" };
 const LIVE_TOPIC = "smart-environment/esp32-001/telemetry";

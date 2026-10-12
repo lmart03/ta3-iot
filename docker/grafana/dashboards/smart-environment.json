@@ -248,7 +248,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> last()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> last()"
         }
       ],
       "fieldConfig": {
@@ -311,7 +311,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"humidity\")\n  |> last()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"humidity\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> last()"
         }
       ],
       "fieldConfig": {
@@ -366,7 +366,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"light_raw\")\n  |> last()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"light_raw\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> last()"
         }
       ],
       "fieldConfig": {
@@ -421,7 +421,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"motion\")\n  |> map(fn: (r) => ({r with _value: if r._value then 1 else 0}))\n  |> last()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"motion\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> map(fn: (r) => ({r with _value: if r._value then 1 else 0}))\n  |> last()"
         }
       ],
       "fieldConfig": {
@@ -488,7 +488,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"status_code\")\n  |> last()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"status_code\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> last()"
         }
       ],
       "fieldConfig": {
@@ -559,7 +559,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> count()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> count()"
         }
       ],
       "fieldConfig": {
@@ -613,7 +613,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> max()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> max()"
         }
       ],
       "fieldConfig": {
@@ -676,7 +676,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> min()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> min()"
         }
       ],
       "fieldConfig": {
@@ -739,7 +739,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> mean()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> mean()"
         }
       ],
       "fieldConfig": {
@@ -802,7 +802,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -10s)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> count()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -10s)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> count()"
         }
       ],
       "fieldConfig": {
@@ -871,7 +871,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> last()\n  |> map(fn: (r) => ({r with _value: float(v: int(v: r._time)) / 1000000.0}))"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> last()\n  |> map(fn: (r) => ({r with _value: float(v: int(v: r._time)) / 1000000.0}))"
         }
       ],
       "fieldConfig": {
@@ -925,7 +925,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -1001,7 +1001,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"humidity\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"humidity\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -1069,7 +1069,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"light_raw\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"light_raw\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -1137,7 +1137,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"motion\")\n  |> map(fn: (r) => ({r with _value: if r._value then 1 else 0}))"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"motion\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> map(fn: (r) => ({r with _value: if r._value then 1 else 0}))"
         }
       ],
       "fieldConfig": {
