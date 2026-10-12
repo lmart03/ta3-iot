@@ -107,9 +107,12 @@ const livePanels = [
 for (const p of panels) p.gridPos.y += 7;
 panels.unshift(...livePanels);
 
+// Nombre del grupo (aparece en el titulo del dashboard). CAMBIAR por el nombre real del equipo.
+const GROUP_NAME = process.env.GROUP_NAME || "GRUPO 1";
+
 const dashboard = {
   uid: "smart-environment",
-  title: "SMART ENVIRONMENT | IoT MONITORING",
+  title: `${GROUP_NAME} | SMART ENVIRONMENT - IoT MONITORING`,
   tags: ["iot", "esp32", "mqtt"],
   timezone: "browser",
   schemaVersion: 39,
