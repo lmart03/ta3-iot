@@ -6,7 +6,7 @@
 #define DEMO_MODE 1
 #endif
 #ifndef PUBLISH_INTERVAL_MS
-#define PUBLISH_INTERVAL_MS 5000
+#define PUBLISH_INTERVAL_MS 1000
 #endif
 #ifndef WIFI_SSID
 #define WIFI_SSID "Wokwi-GUEST"
