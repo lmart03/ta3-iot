@@ -8,6 +8,10 @@ const base = (field, range = "v.timeRangeStart, stop: v.timeRangeStop") =>
   |> range(start: ${range})
   |> filter(fn: (r) => r._measurement == "environment" and r.device_id == "\${device}" and r._field == "${field}")`;
 
+const MQTT_DS = { type: "grafana-mqtt-datasource", uid: "mqtt-live" };
+const LIVE_TOPIC = "smart-environment/esp32-001/telemetry";
+const liveTarget = [{ datasource: MQTT_DS, refId: "A", topic: LIVE_TOPIC }];
+
 const GREEN = "#2ecc71", YELLOW = "#f1c40f", RED = "#e74c3c", BLUE = "#3498db";
 const tempSteps = [
   { color: GREEN, value: null },
@@ -85,6 +89,23 @@ const panels = [
     options: { legend: { showLegend: true, placement: "bottom", displayMode: "list" }, mergeValues: true, showValue: "auto" },
   },
 ];
+
+// Fila en vivo: Grafana Live (WebSocket) <- plugin MQTT <- EMQX. Sin InfluxDB ni polling.
+const livePanel = (title, x, w, field, unit, color) => ({
+  id: ++id, type: "timeseries", title: `${title} (EN VIVO)`, datasource: MQTT_DS, gridPos: { x, y: 0, w, h: 7 },
+  targets: liveTarget,
+  transformations: [{ id: "organize", options: { includeByName: { Time: true, [field]: true } } }],
+  fieldConfig: { defaults: { unit, custom: { lineWidth: 2, fillOpacity: 15, showPoints: "never" },
+    color: { mode: "fixed", fixedColor: color } }, overrides: [] },
+  options: { legend: { showLegend: false }, tooltip: { mode: "single" } },
+});
+const livePanels = [
+  livePanel("Temperatura", 0, 8, "temperature", "celsius", RED),
+  livePanel("Humedad", 8, 8, "humidity", "humidity", BLUE),
+  livePanel("Iluminación", 16, 8, "light_raw", "none", "#8e44ad"),
+];
+for (const p of panels) p.gridPos.y += 7;
+panels.unshift(...livePanels);
 
 const dashboard = {
   uid: "smart-environment",
