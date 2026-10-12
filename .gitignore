@@ -1,0 +1,9 @@
+.env
+.pio/
+.vscode/.browse.c_cpp.db*
+__pycache__/
+*.pyc
+*.log
+node_modules/
+# Datos persistentes (volumenes nombrados de Docker; si se usan bind mounts locales)
+data/

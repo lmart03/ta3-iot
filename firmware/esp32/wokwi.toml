@@ -1,0 +1,9 @@
+[wokwi]
+version = 1
+firmware = '.pio/build/esp32dev/firmware.bin'
+elf = '.pio/build/esp32dev/firmware.elf'
+
+# El ESP32 simulado alcanza el PC anfitrion como host.wokwi.internal
+# SOLO si el Wokwi Private IoT Gateway esta activo (F1 -> "Enable Private Wokwi IoT Gateway",
+# requiere plan de pago de Wokwi). No se requiere [[net.forward]]: ese bloque es para
+# conexiones entrantes hacia el ESP32, aqui el ESP32 es el cliente MQTT.
