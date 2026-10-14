@@ -1,6 +1,6 @@
 {
   "uid": "smart-environment",
-  "title": "SMART ENVIRONMENT | IoT MONITORING",
+  "title": "GRUPO 1 | SMART ENVIRONMENT - IoT MONITORING",
   "tags": [
     "iot",
     "esp32",
@@ -9,13 +9,15 @@
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
-  "refresh": "5s",
+  "refresh": "1s",
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
+      "1s",
+      "2s",
       "5s",
       "10s",
       "30s",
@@ -51,10 +53,10 @@
     {
       "id": 1,
       "type": "stat",
-      "title": "Temperatura actual",
+      "title": "Temperatura (EN VIVO)",
       "datasource": {
-        "type": "influxdb",
-        "uid": "influx-flux"
+        "type": "grafana-mqtt-datasource",
+        "uid": "mqtt-live"
       },
       "gridPos": {
         "x": 0,
@@ -65,11 +67,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influx-flux"
+            "type": "grafana-mqtt-datasource",
+            "uid": "mqtt-live"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> last()"
+          "topic": "smart-environment/esp32-001/telemetry"
         }
       ],
       "fieldConfig": {
@@ -106,7 +108,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/^temperature$/",
           "values": false
         }
       }
@@ -114,10 +116,10 @@
     {
       "id": 2,
       "type": "stat",
-      "title": "Humedad actual",
+      "title": "Humedad (EN VIVO)",
       "datasource": {
-        "type": "influxdb",
-        "uid": "influx-flux"
+        "type": "grafana-mqtt-datasource",
+        "uid": "mqtt-live"
       },
       "gridPos": {
         "x": 4,
@@ -128,11 +130,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influx-flux"
+            "type": "grafana-mqtt-datasource",
+            "uid": "mqtt-live"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"humidity\")\n  |> last()"
+          "topic": "smart-environment/esp32-001/telemetry"
         }
       ],
       "fieldConfig": {
@@ -161,7 +163,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/^humidity$/",
           "values": false
         }
       }
@@ -169,10 +171,10 @@
     {
       "id": 3,
       "type": "stat",
-      "title": "Iluminación (ADC 0-4095)",
+      "title": "Iluminación (ADC) (EN VIVO)",
       "datasource": {
-        "type": "influxdb",
-        "uid": "influx-flux"
+        "type": "grafana-mqtt-datasource",
+        "uid": "mqtt-live"
       },
       "gridPos": {
         "x": 8,
@@ -183,11 +185,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influx-flux"
+            "type": "grafana-mqtt-datasource",
+            "uid": "mqtt-live"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"light_raw\")\n  |> last()"
+          "topic": "smart-environment/esp32-001/telemetry"
         }
       ],
       "fieldConfig": {
@@ -216,7 +218,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/^light_raw$/",
           "values": false
         }
       }
@@ -224,10 +226,10 @@
     {
       "id": 4,
       "type": "stat",
-      "title": "Movimiento",
+      "title": "Movimiento (EN VIVO)",
       "datasource": {
-        "type": "influxdb",
-        "uid": "influx-flux"
+        "type": "grafana-mqtt-datasource",
+        "uid": "mqtt-live"
       },
       "gridPos": {
         "x": 12,
@@ -238,11 +240,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influx-flux"
+            "type": "grafana-mqtt-datasource",
+            "uid": "mqtt-live"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"motion\")\n  |> map(fn: (r) => ({r with _value: if r._value then 1 else 0}))\n  |> last()"
+          "topic": "smart-environment/esp32-001/telemetry"
         }
       ],
       "fieldConfig": {
@@ -251,11 +253,11 @@
             {
               "type": "value",
               "options": {
-                "0": {
+                "false": {
                   "text": "SIN MOVIMIENTO",
                   "color": "#2ecc71"
                 },
-                "1": {
+                "true": {
                   "text": "DETECTADO",
                   "color": "#f1c40f"
                 }
@@ -283,7 +285,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/^motion$/",
           "values": false
         }
       }
@@ -291,10 +293,10 @@
     {
       "id": 5,
       "type": "stat",
-      "title": "Estado general",
+      "title": "Estado (EN VIVO)",
       "datasource": {
-        "type": "influxdb",
-        "uid": "influx-flux"
+        "type": "grafana-mqtt-datasource",
+        "uid": "mqtt-live"
       },
       "gridPos": {
         "x": 16,
@@ -305,11 +307,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "influx-flux"
+            "type": "grafana-mqtt-datasource",
+            "uid": "mqtt-live"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"status_code\")\n  |> last()"
+          "topic": "smart-environment/esp32-001/telemetry"
         }
       ],
       "fieldConfig": {
@@ -318,15 +320,15 @@
             {
               "type": "value",
               "options": {
-                "0": {
+                "NORMAL": {
                   "text": "NORMAL",
                   "color": "#2ecc71"
                 },
-                "1": {
+                "WARNING": {
                   "text": "WARNING",
                   "color": "#f1c40f"
                 },
-                "2": {
+                "CRITICAL": {
                   "text": "CRITICAL",
                   "color": "#e74c3c"
                 }
@@ -354,7 +356,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/^status$/",
           "values": false
         }
       }
@@ -380,7 +382,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> count()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> count()"
         }
       ],
       "fieldConfig": {
@@ -423,7 +425,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 4,
+        "y": 11,
         "w": 4,
         "h": 4
       },
@@ -434,7 +436,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> max()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> max()"
         }
       ],
       "fieldConfig": {
@@ -486,7 +488,7 @@
       },
       "gridPos": {
         "x": 4,
-        "y": 4,
+        "y": 11,
         "w": 4,
         "h": 4
       },
@@ -497,7 +499,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> min()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> min()"
         }
       ],
       "fieldConfig": {
@@ -549,7 +551,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 4,
+        "y": 11,
         "w": 4,
         "h": 4
       },
@@ -560,7 +562,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> mean()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> mean()"
         }
       ],
       "fieldConfig": {
@@ -612,7 +614,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 4,
+        "y": 11,
         "w": 6,
         "h": 4
       },
@@ -623,7 +625,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -30s)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> count()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -10s)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> count()"
         }
       ],
       "fieldConfig": {
@@ -681,7 +683,7 @@
       },
       "gridPos": {
         "x": 18,
-        "y": 4,
+        "y": 11,
         "w": 6,
         "h": 4
       },
@@ -692,7 +694,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> last()\n  |> map(fn: (r) => ({r with _value: float(v: int(v: r._time)) / 1000000.0}))"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> last()\n  |> map(fn: (r) => ({r with _value: float(v: int(v: r._time)) / 1000000.0}))"
         }
       ],
       "fieldConfig": {
@@ -735,7 +737,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 8,
+        "y": 15,
         "w": 12,
         "h": 8
       },
@@ -746,7 +748,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -811,7 +813,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 8,
+        "y": 15,
         "w": 12,
         "h": 8
       },
@@ -822,7 +824,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"humidity\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"humidity\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -879,7 +881,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 16,
+        "y": 23,
         "w": 12,
         "h": 8
       },
@@ -890,7 +892,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"light_raw\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"light_raw\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -947,7 +949,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 16,
+        "y": 23,
         "w": 12,
         "h": 8
       },
@@ -958,7 +960,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"motion\")\n  |> map(fn: (r) => ({r with _value: if r._value then 1 else 0}))"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"motion\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> map(fn: (r) => ({r with _value: if r._value then 1 else 0}))"
         }
       ],
       "fieldConfig": {
@@ -1001,6 +1003,183 @@
         },
         "mergeValues": true,
         "showValue": "auto"
+      }
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "Temperatura (EN VIVO)",
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "mqtt-live"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "mqtt-live"
+          },
+          "refId": "A",
+          "topic": "smart-environment/esp32-001/telemetry"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "Time": true,
+              "temperature": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never"
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#e74c3c"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "Humedad (EN VIVO)",
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "mqtt-live"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 4,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "mqtt-live"
+          },
+          "refId": "A",
+          "topic": "smart-environment/esp32-001/telemetry"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "Time": true,
+              "humidity": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "humidity",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never"
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3498db"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "Iluminación (EN VIVO)",
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "mqtt-live"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 4,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "mqtt-live"
+          },
+          "refId": "A",
+          "topic": "smart-environment/esp32-001/telemetry"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "Time": true,
+              "light_raw": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "never"
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#8e44ad"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
       }
     }
   ]

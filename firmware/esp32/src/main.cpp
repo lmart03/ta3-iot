@@ -46,11 +46,11 @@ void setup() {
   Serial.println("================================");
   Serial.println("    SMART ENVIRONMENT IoT");
   Serial.println("================================");
-  Serial.printf("Dispositivo: %s\n", Config::DEVICE_ID);
-  Serial.printf("Modo: %s\n", Config::DEMO ? "SIMULACION AUTOMATICA" : "SENSORES WOKWI");
-  Serial.printf("Intervalo: %lu ms\n", Config::INTERVAL_MS);
+  Serial.printf("Dispositivo: %s\r\n", Config::DEVICE_ID);
+  Serial.printf("Modo: %s\r\n", Config::DEMO ? "SIMULACION AUTOMATICA" : "SENSORES WOKWI");
+  Serial.printf("Intervalo: %lu ms\r\n", Config::INTERVAL_MS);
   Serial.println("Ciclo demo: 5 minutos");
-  Serial.printf("Broker: %s:%d\n", MQTT_HOST, MQTT_PORT);
+  Serial.printf("Broker: %s:%d\r\n", MQTT_HOST, MQTT_PORT);
   Serial.println("================================");
 
   setupNetwork();

@@ -6,7 +6,10 @@
 #define DEMO_MODE 1
 #endif
 #ifndef PUBLISH_INTERVAL_MS
-#define PUBLISH_INTERVAL_MS 5000
+#define PUBLISH_INTERVAL_MS 500
+#endif
+#ifndef LOG_JSON
+#define LOG_JSON 0  // 1 = imprimir tambien el JSON publicado
 #endif
 #ifndef WIFI_SSID
 #define WIFI_SSID "Wokwi-GUEST"

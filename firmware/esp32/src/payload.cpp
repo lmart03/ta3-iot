@@ -23,16 +23,12 @@ int serializePayload(char* out, size_t size, const SensorData& d,
 
 void printMeasurement(const SensorData& d, const char* status,
                       const char* source, const char* payload, bool sent) {
-  Serial.println();
-  Serial.println("===== SMART ENVIRONMENT =====");
-  Serial.printf("Temperatura: %.2f C\n", d.temperature);
-  Serial.printf("Humedad: %.2f %%\n", d.humidity);
-  Serial.printf("Iluminacion ADC: %d\n", d.lightRaw);
-  Serial.printf("Movimiento: %s\n", d.motion ? "DETECTADO" : "NO");
-  Serial.printf("Estado: %s\n", status);
-  Serial.printf("Origen: %s\n", source);
-  Serial.printf("MQTT: %s\n", sent ? "publicado" : "NO publicado (sin conexion)");
-  Serial.println("JSON:");
-  Serial.println(payload);
-  Serial.println("============================");
+  // Una sola linea por medicion (a 500 ms un bloque multilinea es ilegible).
+  // "\r\n" evita el efecto escalera en terminales que no hacen CR en cada LF.
+  Serial.printf("[%s] T=%.2fC H=%.2f%% LUZ=%d MOV=%s %s (%s)\r\n",
+                sent ? "MQTT OK " : "MQTT ERR", d.temperature, d.humidity,
+                d.lightRaw, d.motion ? "SI" : "NO", status, source);
+#if LOG_JSON
+  Serial.printf("       %s\r\n", payload);
+#endif
 }

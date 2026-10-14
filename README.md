@@ -6,13 +6,21 @@ Monitoreo ambiental con **ESP32 (Wokwi)** + DHT22, LDR y PIR. Los datos viajan p
 ESP32 (Wokwi/VS Code) --WiFi/MQTT--> EMQX --> mqtt-ingestor (Python) --> InfluxDB --> Grafana
 ```
 
+### Tiempo real (WebSocket)
+
+Las 3 gráficas **(EN VIVO)** de la parte superior del dashboard usan el plugin `grafana-mqtt-datasource` (se instala solo al levantar Grafana; requiere internet la primera vez):
+Grafana se suscribe a EMQX y empuja cada mensaje al navegador por **Grafana Live (WebSocket)**, sin pasar por InfluxDB ni esperar el refresco.
+El resto de paneles (acumulados, historial) siguen leyendo InfluxDB con refresco de 1 s.
+
 ## Estructura
 
 ```
 firmware/esp32/      PlatformIO + Wokwi (src/: config, sensors, demo_scenario, payload, network, main)
   original/          sketch.ino y libraries.txt originales (copia de respaldo)
 docker/grafana/      provisioning (datasource, dashboards) y dashboard JSON versionado
-services/mqtt-ingestor/  suscriptor MQTT -> InfluxDB (Dockerfile, main.py)
+services/mqtt-ingestor/  suscriptor MQTT -> InfluxDB (Dockerfile, main.py, tests/)
+services/mqtt-bridge/    puente broker publico -> EMQX local
+docs/INFORME.md      borrador del informe tecnico
 scripts/build-dashboard.mjs  regenera el dashboard (node scripts/build-dashboard.mjs)
 docs/evidencias/     evidencias para la TA3
 compose.yaml  .env.example
@@ -49,11 +57,11 @@ de donde sigue el flujo normal (ingestor -> InfluxDB -> Grafana).
 | EMQX Dashboard | http://localhost:18083 | `EMQX_DASHBOARD_*` del `.env` |
 | MQTT | localhost:1883 | anónimo (demo local) |
 | InfluxDB | http://localhost:8086 | `INFLUXDB_ADMIN_*` |
-| Grafana | http://localhost:3000 | `GRAFANA_ADMIN_*` → dashboard **SMART ENVIRONMENT \| IoT MONITORING** |
+| Grafana | http://localhost:3000 | `GRAFANA_ADMIN_*` → dashboard **GRUPO 1 \| SMART ENVIRONMENT - IoT MONITORING** (cambia `GROUP_NAME` en `scripts/build-dashboard.mjs`) |
 
 ## Configuración del firmware
 
-Se cambia en `firmware/esp32/platformio.ini` (`build_flags`): `DEMO_MODE` (1 sintético / 0 sensores Wokwi), `PUBLISH_INTERVAL_MS` (5000 demo; **10000** si el docente exige 10 s), `MQTT_HOST` (`host.wokwi.internal`), `MQTT_PORT`, `MQTT_USER`/`MQTT_PASSWORD`.
+Se cambia en `firmware/esp32/platformio.ini` (`build_flags`): `DEMO_MODE` (1 sintético / 0 sensores Wokwi), `PUBLISH_INTERVAL_MS` (**500** = casi tiempo real; **10000** = lectura cada 10 s, la que exige la consigna TA3: cámbialo antes de la entrega/grabación), `MQTT_HOST` (`host.wokwi.internal`), `MQTT_PORT`, `MQTT_USER`/`MQTT_PASSWORD`.
 
 Tópicos: `smart-environment/esp32-001/telemetry` y `.../status` (retenido, con Last Will `offline`).
 
@@ -70,6 +78,8 @@ docker compose exec emqx emqx ctl topics list # tópicos activos
 ```
 Prueba sin ESP32 (solo MQTT → Influx), con `mosquitto_pub` si lo tienes:
 `mosquitto_pub -h localhost -t smart-environment/esp32-001/telemetry -m '{"device_id":"ESP32-001","temperature":26.1,"humidity":55.0,"light_raw":1200,"motion":false,"status":"NORMAL","source":"synthetic","sequence":1,"uptime_ms":5000}'`
+
+Tests del ingestor: `pip install -r services/mqtt-ingestor/requirements.txt pytest && pytest services/mqtt-ingestor/tests`
 
 ## Errores frecuentes
 

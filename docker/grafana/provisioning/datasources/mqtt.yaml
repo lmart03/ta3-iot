@@ -1,0 +1,11 @@
+apiVersion: 1
+datasources:
+  - name: MQTT Live
+    uid: mqtt-live
+    type: grafana-mqtt-datasource
+    access: proxy
+    jsonData:
+      uri: tcp://emqx:1883
+      username: ${MQTT_USER}
+    secureJsonData:
+      password: ${MQTT_PASSWORD}

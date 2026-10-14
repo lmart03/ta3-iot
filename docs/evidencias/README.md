@@ -11,4 +11,4 @@ Guardar capturas en esta carpeta y enlazarlas aquí.
 | Dashboard Grafana (15 paneles actualizándose) | | Pendiente |
 | Trabajo colaborativo (commits, reparto de tareas) | | Pendiente |
 
-Nota: la rúbrica pide lecturas cada 10 s; usar `PUBLISH_INTERVAL_MS=10000` en `platformio.ini` si se exige.
+Nota: el firmware ya publica cada 10 s (`PUBLISH_INTERVAL_MS=10000`), como pide la consigna.
