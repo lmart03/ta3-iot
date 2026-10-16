@@ -9,9 +9,9 @@
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
-  "refresh": "1s",
+  "refresh": "10s",
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -625,7 +625,7 @@
             "uid": "influx-flux"
           },
           "refId": "A",
-          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -10s)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> count()"
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -90s)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"sequence\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> count()"
         }
       ],
       "fieldConfig": {
@@ -1008,10 +1008,10 @@
     {
       "id": 16,
       "type": "timeseries",
-      "title": "Temperatura (EN VIVO)",
+      "title": "Temperatura (ACTUALIZACION 10 s)",
       "datasource": {
-        "type": "grafana-mqtt-datasource",
-        "uid": "mqtt-live"
+        "type": "influxdb",
+        "uid": "influx-flux"
       },
       "gridPos": {
         "x": 0,
@@ -1022,22 +1022,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "mqtt-live"
+            "type": "influxdb",
+            "uid": "influx-flux"
           },
           "refId": "A",
-          "topic": "smart-environment/esp32-001/telemetry"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "includeByName": {
-              "Time": true,
-              "temperature": true
-            }
-          }
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"temperature\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: 10s, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -1046,7 +1035,8 @@
           "custom": {
             "lineWidth": 2,
             "fillOpacity": 15,
-            "showPoints": "never"
+            "showPoints": "always",
+            "pointSize": 3
           },
           "color": {
             "mode": "fixed",
@@ -1067,10 +1057,10 @@
     {
       "id": 17,
       "type": "timeseries",
-      "title": "Humedad (EN VIVO)",
+      "title": "Humedad (ACTUALIZACION 10 s)",
       "datasource": {
-        "type": "grafana-mqtt-datasource",
-        "uid": "mqtt-live"
+        "type": "influxdb",
+        "uid": "influx-flux"
       },
       "gridPos": {
         "x": 8,
@@ -1081,22 +1071,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "mqtt-live"
+            "type": "influxdb",
+            "uid": "influx-flux"
           },
           "refId": "A",
-          "topic": "smart-environment/esp32-001/telemetry"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "includeByName": {
-              "Time": true,
-              "humidity": true
-            }
-          }
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"humidity\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: 10s, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -1105,7 +1084,8 @@
           "custom": {
             "lineWidth": 2,
             "fillOpacity": 15,
-            "showPoints": "never"
+            "showPoints": "always",
+            "pointSize": 3
           },
           "color": {
             "mode": "fixed",
@@ -1126,10 +1106,10 @@
     {
       "id": 18,
       "type": "timeseries",
-      "title": "Iluminación (EN VIVO)",
+      "title": "Iluminación (ACTUALIZACION 10 s)",
       "datasource": {
-        "type": "grafana-mqtt-datasource",
-        "uid": "mqtt-live"
+        "type": "influxdb",
+        "uid": "influx-flux"
       },
       "gridPos": {
         "x": 16,
@@ -1140,22 +1120,11 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "mqtt-live"
+            "type": "influxdb",
+            "uid": "influx-flux"
           },
           "refId": "A",
-          "topic": "smart-environment/esp32-001/telemetry"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "includeByName": {
-              "Time": true,
-              "light_raw": true
-            }
-          }
+          "query": "from(bucket: \"smart_environment\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"environment\" and r.device_id == \"${device}\" and r._field == \"light_raw\")\n  |> group(columns: [\"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: 10s, fn: mean, createEmpty: false)"
         }
       ],
       "fieldConfig": {
@@ -1164,7 +1133,8 @@
           "custom": {
             "lineWidth": 2,
             "fillOpacity": 15,
-            "showPoints": "never"
+            "showPoints": "always",
+            "pointSize": 3
           },
           "color": {
             "mode": "fixed",

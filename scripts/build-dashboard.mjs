@@ -73,8 +73,10 @@ const panels = [
     { unit: "celsius", decimals: 1, graph: "none", steps: tempSteps }),
   stat("Temperatura promedio", 8, 4, 4, base("temperature") + "\n  |> mean()",
     { unit: "celsius", decimals: 1, graph: "none", steps: tempSteps }),
+  // Los 90 s son una tolerancia de monitoreo para la simulacion (Wokwi a velocidad
+  // reducida); no es una prueba directa del estado de la conexion TCP/MQTT.
   stat("Conexión del dispositivo", 12, 4, 6,
-    base("sequence", "-10s") + "\n  |> count()",
+    base("sequence", "-90s") + "\n  |> count()",
     { graph: "none", noValue: "OFFLINE",
       mappings: [{ type: "range", options: { from: 1, to: 1e9, result: { text: "ONLINE", color: GREEN } } }],
       steps: [{ color: RED, value: null }, { color: GREEN, value: 1 }] }),
@@ -97,22 +99,22 @@ const panels = [
   },
 ];
 
-// Fila en vivo: Grafana Live (WebSocket) <- plugin MQTT <- EMQX. Sin InfluxDB ni polling.
-const livePanel = (title, x, w, field, unit, color) => ({
-  id: ++id, type: "timeseries", title: `${title} (EN VIVO)`, datasource: MQTT_DS, gridPos: { x, y: 4, w, h: 7 },
-  targets: liveTarget,
-  transformations: [{ id: "organize", options: { includeByName: { Time: true, [field]: true } } }],
-  fieldConfig: { defaults: { unit, custom: { lineWidth: 2, fillOpacity: 15, showPoints: "never" },
+// Fila de monitoreo: consulta periodica a InfluxDB (cada 10 s) con historial persistente.
+// El plugin MQTT no almacena series temporales, por eso estos graficos usan influx-flux.
+const monitoringPanel = (title, x, w, field, unit, color) => ({
+  id: ++id, type: "timeseries", title: `${title} (ACTUALIZACION 10 s)`, datasource: DS, gridPos: { x, y: 4, w, h: 7 },
+  targets: target(base(field, "-10m") + `\n  |> aggregateWindow(every: 10s, fn: mean, createEmpty: false)`),
+  fieldConfig: { defaults: { unit, custom: { lineWidth: 2, fillOpacity: 15, showPoints: "always", pointSize: 3 },
     color: { mode: "fixed", fixedColor: color } }, overrides: [] },
   options: { legend: { showLegend: false }, tooltip: { mode: "single" } },
 });
-const livePanels = [
-  livePanel("Temperatura", 0, 8, "temperature", "celsius", RED),
-  livePanel("Humedad", 8, 8, "humidity", "humidity", BLUE),
-  livePanel("Iluminación", 16, 8, "light_raw", "none", "#8e44ad"),
+const monitoringPanels = [
+  monitoringPanel("Temperatura", 0, 8, "temperature", "celsius", RED),
+  monitoringPanel("Humedad", 8, 8, "humidity", "humidity", BLUE),
+  monitoringPanel("Iluminación", 16, 8, "light_raw", "none", "#8e44ad"),
 ];
 for (const p of panels) if (p.datasource !== MQTT_DS && p.gridPos.y > 0) p.gridPos.y += 7;
-panels.push(...livePanels);
+panels.push(...monitoringPanels);
 
 // Nombre del grupo (aparece en el titulo del dashboard). CAMBIAR por el nombre real del equipo.
 const GROUP_NAME = process.env.GROUP_NAME || "GRUPO 1";
@@ -124,8 +126,8 @@ const dashboard = {
   timezone: "browser",
   schemaVersion: 39,
   version: 1,
-  refresh: "1s",
-  time: { from: "now-5m", to: "now" },
+  refresh: "10s",
+  time: { from: "now-30m", to: "now" },
   timepicker: { refresh_intervals: ["1s", "2s", "5s", "10s", "30s", "1m"] },
   templating: { list: [{
     name: "device", label: "Dispositivo", type: "query", datasource: DS,
